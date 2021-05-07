@@ -199,6 +199,7 @@
 						'nz.png'
 					] );
 
+					/*
 				const loader = new THREE.CubeTextureLoader();
 				loader.setPath( 'img/skybox/' );
 
@@ -206,7 +207,9 @@
 					'px.png', 'nx.png',
 					'py.png', 'ny.png',
 					'pz.png', 'nz.png'
-				] );
+				] );*/
+
+				const textureCube = new THREE.TextureLoader().load( "img/wall_texture.png" );
 
 
 				const geometry = new THREE.BoxGeometry( 10, 10, 10 );
@@ -257,7 +260,7 @@
 				var floorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
 
 				var floor = new THREE.Mesh( floorGeometry, floorMaterial );
-				scene.add( floor );
+				//scene.add( floor );
 
 				// objects
 
