@@ -189,7 +189,7 @@
 				document.addEventListener( 'keyup', onKeyUp, false );
 
 				scene.background = new THREE.CubeTextureLoader()
-					.setPath( 'img/calibrate/' )
+					.setPath( 'img/skybox/' )
 					.load( [
 						'px.png',
 						'nx.png',
@@ -200,7 +200,7 @@
 					] );
 
 				const loader = new THREE.CubeTextureLoader();
-				loader.setPath( 'img/calibrate/' );
+				loader.setPath( 'img/skybox/' );
 
 				const textureCube = loader.load( [
 					'px.png', 'nx.png',
