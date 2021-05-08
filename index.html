@@ -59,6 +59,7 @@
 		<script type="module">
 
 			import * as THREE from './build/three.module.js';
+			import { VOXLoader, VOXMesh } from './jsm/VOXLoader.js';
 
 			import { PointerLockControls } from './jsm/PointerLockControls.js';
 
@@ -187,6 +188,27 @@
 
 				document.addEventListener( 'keydown', onKeyDown, false );
 				document.addEventListener( 'keyup', onKeyUp, false );
+
+				function VoxLoad() {
+
+								const loader = new VOXLoader();
+								loader.load( 'models/test.vox', function ( chunks ) {
+
+									for ( let i = 0; i < chunks.length; i ++ ) {
+
+										const chunk = chunks[ i ];
+
+										// displayPalette( chunk.palette );
+
+										const mesh = new VOXMesh( chunk );
+										//mesh.scale.setScalar( 0.0015 );
+										scene.add( mesh );
+
+									}
+
+								} );
+				}
+				VoxLoad();
 
 				scene.background = new THREE.CubeTextureLoader()
 					.setPath( 'img/skybox/' )
