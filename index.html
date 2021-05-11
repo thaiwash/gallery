@@ -60,6 +60,7 @@
 
 			import * as THREE from './build/three.module.js';
 			import { VOXLoader, VOXMesh } from './jsm/VOXLoader.js';
+			import { FBXLoader } from './jsm/FBXLoader.js';
 
 			import { PointerLockControls } from './jsm/PointerLockControls.js';
 
@@ -202,6 +203,7 @@
 
 										const mesh = new VOXMesh( chunk );
 										//mesh.scale.setScalar( 0.0015 );
+										mesh.position.y = 25
 										scene.add( mesh );
 
 									}
@@ -209,6 +211,16 @@
 								} );
 				}
 				VoxLoad();
+
+				// model
+							var loader = new FBXLoader();
+							console.log("Hello")
+							loader.load( '/models/PIC-FRAME-FBX.fbx', function ( object ) {
+
+								console.log("Hello")
+								scene.add( object );
+								console.log("Hello")
+							} );
 
 				scene.background = new THREE.CubeTextureLoader()
 					.setPath( 'img/skybox/' )
