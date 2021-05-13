@@ -65,7 +65,7 @@
 
 			import { PointerLockControls } from './jsm/PointerLockControls.js';
 
-			var camera, scene, renderer, controls;
+			var camera, scene, renderer, controls, object, texture;
 
 			var objects = [];
 
@@ -96,7 +96,14 @@
 
 				} );
 
-				object.position.y = - 95;
+				//object.position.y = 0;
+				object.rotation.x = Math.PI/2;
+				object.scale.x = 0.03
+				object.scale.y = 0.03
+				object.scale.z = 0.03
+				object.position.y = 10;
+				object.position.z = -9;
+
 				scene.add( object );
 
 			}
@@ -113,7 +120,7 @@
 
 					var textureLoader = new THREE.TextureLoader( manager );
 
-					var texture = textureLoader.load( 'models/wood.jpg' );
+					texture = textureLoader.load( 'models/wood.jpg' );
 
 					// model
 
@@ -135,7 +142,7 @@
 					loader.load( 'models/frame.obj', function ( obj ) {
 
 						object = obj;
-
+						loadModel()
 					}, onProgress, onError );
 			}
 
@@ -267,6 +274,7 @@
 				VoxLoad();
 				objLoad()
 				// model
+				/*
 							var loader = new FBXLoader();
 							console.log("Hello")
 							loader.load( '/models/frame.fbx', function ( object ) {
@@ -275,7 +283,7 @@
 								//scene.add( object );
 								console.log("Hello")
 							} );
-
+*/
 				scene.background = new THREE.CubeTextureLoader()
 					.setPath( 'img/skybox/' )
 					.load( [
