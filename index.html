@@ -61,6 +61,7 @@
 			import * as THREE from './build/three.module.js';
 			import { VOXLoader, VOXMesh } from './jsm/VOXLoader.js';
 			import { FBXLoader } from './jsm/FBXLoader.js';
+			import { OBJLoader } from './jsm/OBJLoader.js';
 
 			import { PointerLockControls } from './jsm/PointerLockControls.js';
 
@@ -84,6 +85,59 @@
 
 			init();
 			animate();
+
+			// manager
+
+			function loadModel() {
+
+				object.traverse( function ( child ) {
+
+					if ( child.isMesh ) child.material.map = texture;
+
+				} );
+
+				object.position.y = - 95;
+				scene.add( object );
+
+			}
+
+			function objLoad() {
+
+					var manager = new THREE.LoadingManager( loadModel );
+
+					manager.onProgress = function ( item, loaded, total ) {
+
+						console.log( item, loaded, total );
+
+					};
+
+					var textureLoader = new THREE.TextureLoader( manager );
+
+					var texture = textureLoader.load( 'models/wood.jpg' );
+
+					// model
+
+					function onProgress( xhr ) {
+
+						if ( xhr.lengthComputable ) {
+
+							var percentComplete = xhr.loaded / xhr.total * 100;
+							console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+
+						}
+
+					}
+
+					function onError() {}
+
+					var loader = new OBJLoader( manager );
+
+					loader.load( 'models/frame.obj', function ( obj ) {
+
+						object = obj;
+
+					}, onProgress, onError );
+			}
 
 			function init() {
 
@@ -211,14 +265,14 @@
 								} );
 				}
 				VoxLoad();
-
+				objLoad()
 				// model
 							var loader = new FBXLoader();
 							console.log("Hello")
-							loader.load( '/models/PIC-FRAME-FBX.fbx', function ( object ) {
+							loader.load( '/models/frame.fbx', function ( object ) {
 
 								console.log("Hello")
-								scene.add( object );
+								//scene.add( object );
 								console.log("Hello")
 							} );
 
