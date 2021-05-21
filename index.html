@@ -106,6 +106,32 @@
 
 				scene.add( object );
 
+				const geometry = new THREE.PlaneGeometry( 5, 20, 32 );
+				const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+				const plane = new THREE.Mesh( geometry, material );
+				scene.add( plane );
+			}
+
+			function planeLoad() {
+
+				var geometry = new THREE.PlaneGeometry( 5, 20, 32 );
+				var texture = new THREE.TextureLoader().load( '/img/painting/152414561_714028852647187_6553680962474280933_n.jpg' );
+				var material = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } );
+				var plane = new THREE.Mesh( geometry, material );
+				scene.add( plane );
+				console.log("hi")
+			}
+
+			function paintingCube() {
+				const textureCube = new THREE.TextureLoader().load( '/img/painting/152414561_714028852647187_6553680962474280933_n.jpg' );
+
+
+				const geometry = new THREE.BoxGeometry( 1, 1, 0.1 );
+				const material = new THREE.MeshBasicMaterial( { color: 0xffffff, map: textureCube } );
+				const cube = new THREE.Mesh( geometry, material );
+
+				cube.position.y = 10;
+				scene.add( cube );
 			}
 
 			function objLoad() {
@@ -273,6 +299,8 @@
 				}
 				VoxLoad();
 				objLoad()
+				paintingCube()
+				//planeLoad()
 				// model
 				/*
 							var loader = new FBXLoader();
@@ -305,15 +333,8 @@
 					'pz.png', 'nz.png'
 				] );*/
 
-				const textureCube = new THREE.TextureLoader().load( "img/wall_texture.png" );
+								//const textureCube = new THREE.TextureLoader().load( "img/wall_texture.png" );
 
-
-				const geometry = new THREE.BoxGeometry( 10, 10, 10 );
-				const material = new THREE.MeshBasicMaterial( { color: 0xffffff, map: textureCube } );
-				const cube = new THREE.Mesh( geometry, material );
-				cube.name="Hellow"
-				cube.position.y = 10;
-				scene.add( cube );
 
 
 				raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
