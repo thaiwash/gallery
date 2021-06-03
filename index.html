@@ -83,44 +83,101 @@
 			var vertex = new THREE.Vector3();
 			var color = new THREE.Color();
 
+			var paintings = [
+
+				// Center room
+				{x: 5, y: 10, z: -9, rotation: 1, img: "152414561_714028852647187_6553680962474280933_n.jpg"},
+				{x: -5, y: 10, z: -9, rotation: 1, img: "152422489_1393835924320598_179824803962353269_n.jpg"},
+				{x: 0, y: 10, z: -9, rotation: 1, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
+				{x: 12, y: 10, z: -5, rotation: 2, img: "152450998_418750205893949_1323928019240639510_n.jpg"},
+				{x: 12, y: 10, z: 1, rotation: 2, img: "152491219_697387210940571_6410557920938686347_n.jpg"},
+				{x: 5, y: 10, z: 5, rotation: 3, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
+				{x: -5, y: 10, z: 5, rotation: 3, img: "152505697_768594837092288_3455881816861959791_n.jpg"},
+				{x: 0, y: 10, z: 5, rotation: 3, img: "152534965_191214112796353_4370932435445720685_n.jpg"}
+				//{x: 0, y: 10, z: 5, rotation: 3, img: "152629748_764282030867435_4547661426565101433_n.jpg"}
+
+
+			]
+
 			init();
 			animate();
 
+
+			function nullLoader(object) {
+			}
 			// manager
 
-			function loadPainting(x, z, rot, image) {
-
-				object.traverse( function ( child ) {
+			function loadPainting(_object, x, y, z, rot, img) {
+				var obj = _object.clone()
+								console.log(y+" "+z+" "+img)
+				obj.traverse( function ( child ) {
 
 					if ( child.isMesh ) child.material.map = texture;
 
 				} );
 
+				obj.rotation.x = Math.PI/2;
+				obj.scale.x = 0.03
+				obj.scale.y = 0.03
+				obj.scale.z = 0.03
+				obj.position.x = x;
+				obj.position.y = y;
+				obj.position.z = z;
+
+
+				scene.add( obj );
+
+				loadPlane(obj, y, z, img, rot)
+
+
 				//object.position.y = 0;
 				var rotation = Math.PI/2
 				if (rot == 1) {
 				}
-				object.rotation.x = rotation;
-				object.scale.x = 0.03
-				object.scale.y = 0.03
-				object.scale.z = 0.03
-				object.position.y = x;
-				object.position.z = z;
-
-				scene.add( object );
-
-				loadPlane(x, z, img)
+				if (rot == 2) {
+					//obj.rotation.y = 0.5;
+					obj.rotation.z = Math.PI/2;
+				}
+				if (rot == 3) {
+					//obj.rotation.y = 0.5;
+					obj.rotation.z = (Math.PI/4) * 4;
+				}
+				if (rot == 4) {
+					//obj.rotation.y = 0.5;
+					obj.rotation.z = (Math.PI/4) * 6;
+				}
 			}
 
-			function loadPlane(y, z, img) {
+			function loadPlane(obj, y, z, img, rot) {
 
 					const geometry = new THREE.PlaneGeometry( 3, 3, 0 );
 					var texture = new THREE.TextureLoader().load( "/img/painting/"+img );
 					const material = new THREE.MeshBasicMaterial( {map: texture} );
 					const plane = new THREE.Mesh( geometry, material );
-					plane.position.y = y;
-					plane.position.z = z+0.01;
-					scene.add( plane );
+					plane.position.y = 1;
+
+					var scale = 30.5
+					plane.scale.x = scale;
+					plane.scale.y = scale;
+					plane.scale.z = scale;
+					plane.rotation.x = -Math.PI/2;
+/*
+					if (rot == 1) {
+					}
+					if (rot == 2) {
+						//obj.rotation.y = 0.5;
+						plane.rotation.z = Math.PI/2;
+					}
+					if (rot == 3) {
+						//obj.rotation.y = 0.5;
+						plane.rotation.z = (Math.PI/4) * 4;
+					}
+					if (rot == 4) {
+						//obj.rotation.y = 0.5;
+						plane.rotation.z = (Math.PI/4) * 6;
+					}
+*/
+					obj.add( plane );
 			}
 
 			function paintingCube() {
@@ -138,7 +195,7 @@
 
 			function objLoad() {
 
-					var manager = new THREE.LoadingManager( loadModel );
+					var manager = new THREE.LoadingManager( loadPainting );
 
 					manager.onProgress = function ( item, loaded, total ) {
 
@@ -170,20 +227,19 @@
 					loader.load( 'models/frame.obj', function ( obj ) {
 
 						object = obj;
-						loadAllPaintings()
+						loadAllPaintings(object)
 					}, onProgress, onError );
 			}
 
 
-			var paintings = [
-				{x: 10, y: -9, rotation: 1, img: "152414561_714028852647187_6553680962474280933_n.jpg"},
-				{x: 10, y: -9, rotation: 1, img: "35924320598_179824803962353269_n.jpg"}
-			]
-
 			function loadAllPaintings() {
-				for (var i < 0; i > paintings.length; i++) {
- 					loadPainting(paintings[i].x, paintings[i].y, paintings[i].img)
+
+				for (var i = 0; i < paintings.length; i++) {
+
+					loadPainting(object, paintings[i].x, paintings[i].y, paintings[i].z, paintings[i].rotation, paintings[i].img)
 				}
+ 				//	loadPainting(paintings[i].x, paintings[i].y, paintings[i].img)
+				//	}
 			}
 
 			function init() {
@@ -312,7 +368,8 @@
 								} );
 				}
 				VoxLoad();
-				objLoad()
+				objLoad();
+				//objLoad()
 				//paintingCube()
 				//planeLoad()
 				// model
