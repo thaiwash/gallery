@@ -1,0 +1,76 @@
+
+			var sphere, box, box2
+			function initPhysics() {
+				world = new OIMO.World({info:true, worldscale:100} );
+				world.clear();
+				world.gravity = new OIMO.Vec3(0, -0.5, 0);
+				console.log("Oimo hello")
+				//world.clear();
+				box2 = world.add({type:'box', size:[1], pos:[20,20,0], move:true, world:world});
+				box = world.add({type:'box', size:[1], pos:[20,0,0], move:false, world:world});
+
+				makePhysicsObjects()
+
+				window.box2 = box2
+				window.box = box
+			}
+
+
+			var cube2, cube
+
+			function makePhysicsObjects() {
+				const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+				cube = new THREE.Mesh( geometry, material );
+				cube.position.x = 20
+				cube.position.y = 0
+				cube.position.z = 0
+				scene.add( cube );
+
+				const geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
+				const material2 = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
+				cube2 = new THREE.Mesh( geometry2, material2 );
+				cube2.position.x = 20
+				cube2.position.y = 20
+				cube2.position.z = 0
+				scene.add( cube2 );
+			}
+				world.step();
+
+				cube2.position.x = box2.position.x
+				cube2.position.y = box2.position.y
+				cube2.position.z = box2.position.z
+
+				cube.position.x = box.position.x
+				cube.position.y = box.position.y
+				cube.position.z = box.position.z
+
+
+
+
+				initPhysics();
+
+
+
+
+				function VoxLoad() {
+
+								const loader = new VOXLoader();
+								loader.load( 'models/gallery.vox', function ( chunks ) {
+
+									for ( let i = 0; i < chunks.length; i ++ ) {
+
+										const chunk = chunks[ i ];
+
+										// displayPalette( chunk.palette );
+
+										const mesh = new VOXMesh( chunk );
+										//mesh.scale.setScalar( 0.0015 );
+										mesh.position.y = 25
+										scene.add( mesh );
+
+									}
+
+								} );
+				}
+				VoxLoad();

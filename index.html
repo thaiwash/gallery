@@ -56,6 +56,7 @@
 
 		</div>
 		<script src="js/fbxLoad.js"></script>
+		<script src="js/spawnPainting.js"></script>
 		<script type="module">
 
 			import * as THREE from './build/three.module.js';
@@ -66,6 +67,8 @@
 
 
 			import { PointerLockControls } from './jsm/PointerLockControls.js';
+
+			window.THREE = THREE
 
 			var camera, scene, renderer, controls, object, texture;
 
@@ -352,13 +355,19 @@
 								} );
 				}
 				VoxLoad();
-				//objLoad();
+				objLoad();
 				fbxLoad(FBXLoader);
+				spawnPainting(34.1,
+					10,
+					0,
+					1,
+					"152414561_714028852647187_6553680962474280933_n.jpg"
+				)
 				//objLoad()
 				//paintingCube()
 				//planeLoad()
 				// model
-				/*
+				/*"152414561_714028852647187_6553680962474280933_n.jpg"
 							var loader = new FBXLoader();
 							console.log("Hello")
 							loader.load( '/models/frame.fbx', function ( object ) {
@@ -475,45 +484,10 @@
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				initPhysics();
 			}
 
-			var cube2, cube
 
-			function makePhysicsObjects() {
-				const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-				const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-				cube = new THREE.Mesh( geometry, material );
-				cube.position.x = 20
-				cube.position.y = 0
-				cube.position.z = 0
-				scene.add( cube );
 
-				const geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
-				const material2 = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
-				cube2 = new THREE.Mesh( geometry2, material2 );
-				cube2.position.x = 20
-				cube2.position.y = 20
-				cube2.position.z = 0
-				scene.add( cube2 );
-			}
-
-			var sphere, box, box2
-
-			function initPhysics() {
-				world = new OIMO.World({info:true, worldscale:100} );
-				world.clear();
-				world.gravity = new OIMO.Vec3(0, -0.5, 0);
-				console.log("Oimo hello")
-				//world.clear();
-				box2 = world.add({type:'box', size:[1], pos:[20,20,0], move:true, world:world});
-				box = world.add({type:'box', size:[1], pos:[20,0,0], move:false, world:world});
-
-				makePhysicsObjects()
-
-				window.box2 = box2
-				window.box = box
-			}
 
 			function onWindowResize() {
 
@@ -527,15 +501,6 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
-				world.step();
-
-				cube2.position.x = box2.position.x
-				cube2.position.y = box2.position.y
-				cube2.position.z = box2.position.z
-
-				cube.position.x = box.position.x
-				cube.position.y = box.position.y
-				cube.position.z = box.position.z
 
 				if ( controls.isLocked === true ) {
 
