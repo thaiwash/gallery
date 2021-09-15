@@ -18,408 +18,511 @@
 		
 		<script type="module">
 
-			import * as THREE from './build/three.module.js';
-			import * as OIMO from './build/oimo.module.js';
-			import { VOXLoader, VOXMesh } from './jsm/VOXLoader.js';
-			import { FBXLoader } from './jsm/FBXLoader.js';
-			import { OBJLoader } from './jsm/OBJLoader.js';
+import * as THREE from './build/three.module.js';
+import * as OIMO from './build/oimo.module.js';
+import { VOXLoader, VOXMesh } from './jsm/VOXLoader.js';
+import { FBXLoader } from './jsm/FBXLoader.js';
+import { OBJLoader } from './jsm/OBJLoader.js';
 
 
-			import { PointerLockControls } from './jsm/PointerLockControls.js';
+import { PointerLockControls } from './jsm/PointerLockControls.js';
 
-			window.THREE = THREE
-			
-			var width = 800
-			var height = 600
-
-			var camera, scene, renderer, controls, object, texture;
+window.THREE = THREE
 
-			var objects = [];
-
-			var raycaster;
-
-			var moveForward = false;
-			var moveBackward = false;
-			var moveLeft = false;
-			var moveRight = false;
-			var canJump = false;
-
-			var prevTime = performance.now();
-			var velocity = new THREE.Vector3();
-			var direction = new THREE.Vector3();
-			var vertex = new THREE.Vector3();
-			var color = new THREE.Color();
+var width = 800
+var height = 600
 
+var camera, scene, renderer, controls, object, texture;
 
-			    //oimo var
-			    var world = null;
-			    var bodys = [];
+var objects = [];
 
-			    var fps = [0,0,0,0];
-			    var ToRad = 0.0174532925199432957;
-			    var type = 1;
-			    var infos;
+var raycaster;
 
-			var paintings = [
+var moveForward = false;
+var moveBackward = false;
+var moveLeft = false;
+var moveRight = false;
+var canJump = false;
 
-				// Center room
-				{x: 5, y: 10, z: -9, rotation: 1, img: "152414561_714028852647187_6553680962474280933_n.jpg"},
-				{x: -5, y: 10, z: -9, rotation: 1, img: "152422489_1393835924320598_179824803962353269_n.jpg"},
-				{x: 0, y: 10, z: -9, rotation: 1, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
-				{x: 12, y: 10, z: -5, rotation: 2, img: "152450998_418750205893949_1323928019240639510_n.jpg"},
-				{x: 12, y: 10, z: 1, rotation: 2, img: "152491219_697387210940571_6410557920938686347_n.jpg"},
-				{x: 5, y: 10, z: 5, rotation: 3, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
-				{x: -5, y: 10, z: 5, rotation: 3, img: "152505697_768594837092288_3455881816861959791_n.jpg"},
-				{x: 0, y: 10, z: 5, rotation: 3, img: "152534965_191214112796353_4370932435445720685_n.jpg"}
-				//{x: 0, y: 10, z: 5, rotation: 3, img: "152629748_764282030867435_4547661426565101433_n.jpg"}
+var prevTime = performance.now();
+var velocity = new THREE.Vector3();
+var direction = new THREE.Vector3();
+var vertex = new THREE.Vector3();
+var color = new THREE.Color();
 
 
-			]
+	//oimo var
+	var world = null;
+	var bodys = [];
 
-			init();
-			animate();
+	var fps = [0,0,0,0];
+	var ToRad = 0.0174532925199432957;
+	var type = 1;
+	var infos;
 
+var paintings = [
 
-			function nullLoader(object) {
-			}
-			// manager
+	// Center room
+	{x: 5, y: 10, z: -9, rotation: 1, img: "152414561_714028852647187_6553680962474280933_n.jpg"},
+	{x: -5, y: 10, z: -9, rotation: 1, img: "152422489_1393835924320598_179824803962353269_n.jpg"},
+	{x: 0, y: 10, z: -9, rotation: 1, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
+/*	{x: 12, y: 10, z: -5, rotation: 2, img: "152450998_418750205893949_1323928019240639510_n.jpg"},
+	{x: 12, y: 10, z: 1, rotation: 2, img: "152491219_697387210940571_6410557920938686347_n.jpg"},
+	{x: 5, y: 10, z: 5, rotation: 3, img: "152435663_1047804788958486_2566929566595162337_n.jpg"},
+	{x: -5, y: 10, z: 5, rotation: 3, img: "152505697_768594837092288_3455881816861959791_n.jpg"},
+	{x: 0, y: 10, z: 5, rotation: 3, img: "152534965_191214112796353_4370932435445720685_n.jpg"}*/
+	//{x: 0, y: 10, z: 5, rotation: 3, img: "152629748_764282030867435_4547661426565101433_n.jpg"}
 
-			function loadPainting(_object, x, y, z, rot, img) {
-				if (typeof _object === "undefined") {
-					return
-				}
-				
-				
-				var obj = _object.clone()
-				console.log(y+" "+z+" "+img)
-				obj.traverse( function ( child ) {
 
-					if ( child.isMesh ) child.material.map = texture;
+]
 
-				} );
+init();
+animate();
 
-				obj.rotation.x = Math.PI/2;
-				obj.scale.x = 0.03
-				obj.scale.y = 0.03
-				obj.scale.z = 0.03
-				obj.position.x = x;
-				obj.position.y = y;
-				obj.position.z = z;
 
-
-				scene.add( obj );
-
-				loadPlane(obj, y, z, img, rot)
-
-
-				//object.position.y = 0;
-				var rotation = Math.PI/2
-				if (rot == 1) {
-				}
-				if (rot == 2) {
-					//obj.rotation.y = 0.5;
-					obj.rotation.z = Math.PI/2;
-				}
-				if (rot == 3) {
-					//obj.rotation.y = 0.5;
-					obj.rotation.z = (Math.PI/4) * 4;
-				}
-				if (rot == 4) {
-					//obj.rotation.y = 0.5;
-					obj.rotation.z = (Math.PI/4) * 6;
-				}
-			}
-
-			function loadPlane(obj, y, z, img, rot) {
-
-					const geometry = new THREE.PlaneGeometry( 3, 3, 0 );
-					var texture = new THREE.TextureLoader().load( "/img/painting/"+img );
-					const material = new THREE.MeshBasicMaterial( {map: texture} );
-					const plane = new THREE.Mesh( geometry, material );
-					plane.position.y = 1;
-
-					var scale = 30.5
-					plane.scale.x = scale;
-					plane.scale.y = scale;
-					plane.scale.z = scale;
-					plane.rotation.x = -Math.PI/2;
-					obj.add( plane );
-			}
-
-
-			function objLoad() {
-
-					var manager = new THREE.LoadingManager( loadPainting );
-
-					manager.onProgress = function ( item, loaded, total ) {
-
-						console.log( item, loaded, total );
-
-					};
-
-					var textureLoader = new THREE.TextureLoader( manager );
-
-					texture = textureLoader.load( 'models/wood.jpg' );
-
-					// model
-
-					function onProgress( xhr ) {
-
-						if ( xhr.lengthComputable ) {
-
-							var percentComplete = xhr.loaded / xhr.total * 100;
-							console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-
-						}
-
-					}
-
-					function onError() {}
-
-					var loader = new OBJLoader( manager );
-
-					loader.load( 'models/frame.obj', function ( obj ) {
-
-						object = obj;
-						loadAllPaintings(object)
-					}, onProgress, onError );
-			}
-
-
-			function loadAllPaintings() {
-
-				for (var i = 0; i < paintings.length; i++) {
-
-					loadPainting(object, paintings[i].x, paintings[i].y, paintings[i].z, paintings[i].rotation, paintings[i].img)
-				}
- 				//	loadPainting(paintings[i].x, paintings[i].y, paintings[i].img)
-				//	}
-			}
-
-			function init() {
-
-
-
-				var w = (window.innerWidth - 800)/2;
-				if (w < 0) {
-				    w = 0
-				}
-				
-				var rendererrDiv = document.getElementById("rendererDiv")
-				rendererDiv.style.position = "absolute"
-				rendererDiv.style.left = w+"px"
-				rendererDiv.style.top = "0px"
-
-				var actioncanvas = document.getElementById("actionCanvas")
-				actioncanvas.style.position = "absolute"
-				actioncanvas.style.left = w+"px"
-				actioncanvas.style.top = "0px"
-				
-
-				camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );
-				camera.position.y = 10;
-
-				scene = new THREE.Scene();
-				window.scene = scene
-				scene.background = new THREE.Color( 0xffffff );
-				scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
-
-				var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
-				light.position.set( 0.5, 1, 0.75 );
-				scene.add( light );
-
-
-
-
-				function VoxLoad() {
-
-								const loader = new VOXLoader();
-								loader.load( 'models/gallery.vox', function ( chunks ) {
-
-									for ( let i = 0; i < chunks.length; i ++ ) {
-
-										const chunk = chunks[ i ];
-
-										// displayPalette( chunk.palette );
-
-										const mesh = new VOXMesh( chunk );
-										//mesh.scale.setScalar( 0.0015 );
-										mesh.position.y = 25
-										scene.add( mesh );
-
-									}
-
-								} );
-				}
-				VoxLoad();
-				objLoad();
-				fbxLoad(FBXLoader);
-				spawnPainting(34.1,
-					10,
-					0,
-					1,
-					"152414561_714028852647187_6553680962474280933_n.jpg"
-				)
-				//objLoad()
-				//paintingCube()
-				//planeLoad()
-				// model
-				/*"152414561_714028852647187_6553680962474280933_n.jpg"
-							var loader = new FBXLoader();
-							console.log("Hello")
-							loader.load( '/models/frame.fbx', function ( object ) {
-
-								console.log("Hello")
-								//scene.add( object );
-								console.log("Hello")
-							} );
-*/
-				scene.background = new THREE.CubeTextureLoader()
-					.setPath( 'img/skybox/' )
-					.load( [
-						'px.png',
-						'nx.png',
-						'py.png',
-						'ny.png',
-						'pz.png',
-						'nz.png'
-					] );
-
-
-
-				// floor
-
-				var floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
-				floorGeometry.rotateX( - Math.PI / 2 );
-
-				// vertex displacement
-
-				var position = floorGeometry.attributes.position;
-
-				for ( var i = 0, l = position.count; i < l; i ++ ) {
-
-					vertex.fromBufferAttribute( position, i );
-
-					vertex.x += Math.random() * 20 - 10;
-					vertex.y += Math.random() * 2;
-					vertex.z += Math.random() * 20 - 10;
-
-					position.setXYZ( i, vertex.x, vertex.y, vertex.z );
-
-				}
-
-				floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
-
-				position = floorGeometry.attributes.position;
-				var colors = [];
-
-				for ( var i = 0, l = position.count; i < l; i ++ ) {
-
-					color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					colors.push( color.r, color.g, color.b );
-
-				}
-
-				floorGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-
-				var floorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
-
-				var floor = new THREE.Mesh( floorGeometry, floorMaterial );
-				//scene.add( floor );
-
-				// objects
-
-				var boxGeometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
-				boxGeometry = boxGeometry.toNonIndexed(); // ensure each face has unique vertices
-
-				position = boxGeometry.attributes.position;
-				colors = [];
-
-				for ( var i = 0, l = position.count; i < l; i ++ ) {
-
-					color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					colors.push( color.r, color.g, color.b );
-
-				}
-
-				boxGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-
-				for ( var i = 0; i < 500; i ++ ) {
-
-					var boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: THREE.VertexColors } );
-					boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-					var box = new THREE.Mesh( boxGeometry, boxMaterial );
-					box.position.x = Math.floor( Math.random() * 20 - 10 ) * 20;
-					box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
-					box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
-
-
-				}
-
-				//
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( width, height );
-				document.getElementById("rendererDiv").appendChild( renderer.domElement );
-
-				//
-
-			}
-
-
-
-			function animate() {
-
-				requestAnimationFrame( animate );
-				
-				//var result = TWEEN.update(time)
-
-				renderer.render( scene, camera );
-
-			}
-			
-
-
-function update() {
-
-console.log("update tween")
-
-/*
-	target.style.left = position.x + 'px'
-	target.style.top = position.y + 'px'
-	target.style.webkitTransform = 'rotate(' + Math.floor(position.rotation) + 'deg)'
-	target.style.MozTransform = 'rotate(' + Math.floor(position.rotation) + 'deg)'
-*/
+function nullLoader(object) {
 }
-			
-function tweenLeft() {
-	console.log("tweening left")
-	tween = new TWEEN.Tween(camera.position)
-		.to({x: 700, y: 200, rotation: 359}, 2000)
-		.delay(1000)
-		.easing(TWEEN.Easing.Elastic.InOut)
-		.onUpdate(update)
-}
-function tweenRight() {
+// manager
+
+function loadPainting(_object, x, y, z, rot, img) {
+	if (typeof _object === "undefined") {
+		return
+	}
+	
+	
+	var obj = _object.clone()
+	console.log(y+" "+z+" "+img)
+	obj.traverse( function ( child ) {
+
+		if ( child.isMesh ) child.material.map = texture;
+
+	} );
+
+	obj.rotation.x = Math.PI/2;
+	obj.scale.x = 0.03
+	obj.scale.y = 0.03
+	obj.scale.z = 0.03
+	obj.position.x = x;
+	obj.position.y = y;
+	obj.position.z = z;
+
+
+	scene.add( obj );
+
+	loadPlane(obj, y, z, img, rot)
+
+
+	//object.position.y = 0;
+	var rotation = Math.PI/2
+	if (rot == 1) {
+	}
+	if (rot == 2) {
+		//obj.rotation.y = 0.5;
+		obj.rotation.z = Math.PI/2;
+	}
+	if (rot == 3) {
+		//obj.rotation.y = 0.5;
+		obj.rotation.z = (Math.PI/4) * 4;
+	}
+	if (rot == 4) {
+		//obj.rotation.y = 0.5;
+		obj.rotation.z = (Math.PI/4) * 6;
+	}
 }
 
+function loadPlane(obj, y, z, img, rot) {
+
+		const geometry = new THREE.PlaneGeometry( 3, 3, 0 );
+		var texture = new THREE.TextureLoader().load( "/img/painting/"+img );
+		const material = new THREE.MeshBasicMaterial( {map: texture} );
+		const plane = new THREE.Mesh( geometry, material );
+		plane.position.y = 1;
+
+		var scale = 30.5
+		plane.scale.x = scale;
+		plane.scale.y = scale;
+		plane.scale.z = scale;
+		plane.rotation.x = -Math.PI/2;
+		obj.add( plane );
+}
+
+
+function objLoad() {
+
+		var manager = new THREE.LoadingManager( loadPainting );
+
+		manager.onProgress = function ( item, loaded, total ) {
+
+			console.log( item, loaded, total );
+
+		};
+
+		var textureLoader = new THREE.TextureLoader( manager );
+
+		texture = textureLoader.load( 'models/wood.jpg' );
+
+		// model
+
+		function onProgress( xhr ) {
+
+			if ( xhr.lengthComputable ) {
+
+				var percentComplete = xhr.loaded / xhr.total * 100;
+				console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+
+			}
+
+		}
+
+		function onError() {}
+
+		var loader = new OBJLoader( manager );
+
+		loader.load( 'models/frame.obj', function ( obj ) {
+
+			object = obj;
+			loadAllPaintings(object)
+		}, onProgress, onError );
+}
+
+
+function loadAllPaintings() {
+
+	for (var i = 0; i < paintings.length; i++) {
+
+		loadPainting(object, paintings[i].x, paintings[i].y, paintings[i].z, paintings[i].rotation, paintings[i].img)
+	}
+	//	loadPainting(paintings[i].x, paintings[i].y, paintings[i].img)
+	//	}
+}
+
+function init() {
+	var w = (window.innerWidth - 800)/2;
+	if (w < 0) {
+		w = 0
+	}
+	
+	var rendererrDiv = document.getElementById("rendererDiv")
+	rendererDiv.style.position = "absolute"
+	rendererDiv.style.left = w+"px"
+	rendererDiv.style.top = "0px"
+
+	var actioncanvas = document.getElementById("actionCanvas")
+	actioncanvas.style.position = "absolute"
+	actioncanvas.style.left = w+"px"
+	actioncanvas.style.top = "0px"
+	
+
+	camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );
+	camera.position.y = 10;
+
+	scene = new THREE.Scene();
+	window.scene = scene
+	scene.background = new THREE.Color( 0xffffff );
+	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+
+	var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
+	light.position.set( 0.5, 1, 0.75 );
+	scene.add( light );
+
+
+
+
+	function VoxLoad() {
+		const loader = new VOXLoader();
+		loader.load( 'models/gallery.vox', function ( chunks ) {
+
+			for ( let i = 0; i < chunks.length; i ++ ) {
+
+				const chunk = chunks[ i ];
+
+				// displayPalette( chunk.palette );
+
+				const mesh = new VOXMesh( chunk );
+				//mesh.scale.setScalar( 0.0015 );
+				mesh.position.y = 25
+				scene.add( mesh );
+
+			}
+
+		} );
+	}
+	VoxLoad();
+	objLoad();
+	fbxLoad(FBXLoader);
+	spawnPainting(34.1,
+		10,
+		0,
+		1,
+		"152414561_714028852647187_6553680962474280933_n.jpg"
+	)
+
+	scene.background = new THREE.CubeTextureLoader()
+		.setPath( 'img/skybox/' )
+		.load( [
+			'px.png',
+			'nx.png',
+			'py.png',
+			'ny.png',
+			'pz.png',
+			'nz.png'
+		] );
+
+
+
+	// floor
+
+	var floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
+	floorGeometry.rotateX( - Math.PI / 2 );
+
+	// vertex displacement
+
+	var position = floorGeometry.attributes.position;
+
+	for ( var i = 0, l = position.count; i < l; i ++ ) {
+
+		vertex.fromBufferAttribute( position, i );
+
+		vertex.x += Math.random() * 20 - 10;
+		vertex.y += Math.random() * 2;
+		vertex.z += Math.random() * 20 - 10;
+
+		position.setXYZ( i, vertex.x, vertex.y, vertex.z );
+
+	}
+
+	floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
+
+	position = floorGeometry.attributes.position;
+	var colors = [];
+
+	for ( var i = 0, l = position.count; i < l; i ++ ) {
+
+		color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+		colors.push( color.r, color.g, color.b );
+
+	}
+
+	floorGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+	var floorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
+
+	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
+	//scene.add( floor );
+
+	// objects
+
+	var boxGeometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
+	boxGeometry = boxGeometry.toNonIndexed(); // ensure each face has unique vertices
+
+	position = boxGeometry.attributes.position;
+	colors = [];
+
+	for ( var i = 0, l = position.count; i < l; i ++ ) {
+
+		color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+		colors.push( color.r, color.g, color.b );
+
+	}
+
+	boxGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+	for ( var i = 0; i < 500; i ++ ) {
+
+		var boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: THREE.VertexColors } );
+		boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+
+		var box = new THREE.Mesh( boxGeometry, boxMaterial );
+		box.position.x = Math.floor( Math.random() * 20 - 10 ) * 20;
+		box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
+		box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
+
+
+	}
+
+	//
+
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( width, height );
+	document.getElementById("rendererDiv").appendChild( renderer.domElement );
+
+	//
+
+}
+
+
+
+function animate() {
+
+	requestAnimationFrame( animate );
+	
+	updateCameraPosition()
+
+	renderer.render( scene, camera );
+
+}
+			
+
+
+function updateCameraPosition() {
+	var now = (new Date()).getTime()
+	var elapsed = now - lerpStartTime
+	
+	if (isLerping) {
+		//console.log(elapsed)
+		//console.log(lerpingTime)
+		//console.log(elapsed/lerpingTime)
+		var lerpWith = elapsed/lerpingTime
+		
+		
+		if (lerpWith > 1 ) {
+			isLerping = false
+			lerpWith = 1
+		}
+		
+		var lerpingVector = new THREE.Vector3()
+		
+		lerpingVector.lerpVectors(cameraStartPosition, lerpTo, lerpWith)
+		camera.position.copy(lerpingVector)
+		//camera.lookAt(paintings[lookingAtPicture])
+	}
+}
+
+
+function MyRect (x, y, w, h) {
+
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+
+    this.contains = function (x, y) {
+	
+		//if (x >= this.x) {
+		//	if (this.x <= this.x + this.width) {
+		//		return true
+		//}
+		//return false;
+		//	}
+        return this.x <= x && x <= this.x + this.width &&
+               this.y <= y && y <= this.y + this.height;
+    }
+
+    this.draw = function (ctx) {
+		ctx.fillStyle = 'blue';
+        ctx.fillRect(this.x, this.y, this.width, this.height)
+    }
+}
+
+var isLerping = false
+var lerpFloat = 0
+var cameraStartPosition = new THREE.Vector3()
+var lerpTo = new THREE.Vector3()
+var lookingAtPicture = 0
+var lerpingTime = 2000
+var lerpStartTime = 0
+
+function lerp(rightOrLeft) {
+	if (rightOrLeft = 0) {
+	
+		lookingAtPicture ++
+		
+		
+		if (lookingAtPicture == paintings.length) {
+			lookingAtPicture = 0
+		}
+	} else {
+	
+		lookingAtPicture --
+		
+		if (lookingAtPicture < 0) {
+			lookingAtPicture = paintings.length -1
+		}
+		
+		
+	}
+	// if rotation = 1 y +5
+	// missing turns
+	
+	
+	console.log("lerp from")
+	console.log(camera.position)
+	
+	cameraStartPosition.copy(camera.position)
+
+
+	var x = paintings[lookingAtPicture].x 
+	var y = paintings[lookingAtPicture].y
+	var z = paintings[lookingAtPicture].z
+	
+	if (paintings[lookingAtPicture].rotation == 1) {
+		z = z + 7
+	}
+
+
+	lerpTo.fromArray([x,y,z])
+	
+	console.log("lerp to "+x+", "+y+", "+z) 
+	//console.log(paintings[lookingAtPicture])
+	
+	lerpStartTime = (new Date()).getTime()
+	isLerping = true
+}
+
+
+var rectRight
+var rectLeft
+
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    console.log("x: " + x + " y: " + y)
+	
+	
+	if (rectRight.contains(x, y)) {
+		console.log("right clicked")
+		//tweenRight()
+		lerp(0)
+	}
+	if (rectLeft.contains(x, y)) {
+		console.log("left clicked")
+		lerp(1)
+
+	}
+}
 
 window.onload = function() {
+
+	var c = document.getElementById("actionCanvas");
+	var ctx = c.getContext("2d");
+	
+	c.width  = 800;
+	c.height = 600;
+
+	c.addEventListener('mousedown', function(e) {
+		getCursorPosition(c, e)
+	})
+
+	rectRight = new MyRect(580, 200, 200, 200);
+	rectLeft = new MyRect(0, 200, 200, 200);
+	
+
 	var leftImg = new Image;
 	leftImg.onload = function() {
-		var c = document.getElementById("actionCanvas");
-		var ctx = c.getContext("2d");
 		var img = document.getElementById("scream");
-		ctx.drawImage(leftImg, 10, 10);
+		ctx.drawImage(leftImg, rectLeft.x, rectLeft.y, rectLeft.width, rectLeft.height);
 		
 		var rightImg = new Image;
 		rightImg.onload = function() {
 			var c = document.getElementById("actionCanvas");
 			var ctx = c.getContext("2d");
 			var img = document.getElementById("scream");
-			ctx.drawImage(rightImg, 10, 10);
+			ctx.drawImage(rightImg, rectRight.x, rectRight.y, rectRight.width, rectRight.height);
+			
+			//rectLeft.draw(ctx)
+			//rectRight.draw(ctx)
 		}
 		rightImg.src = 'icons8-right-96.png';
 	}
@@ -428,7 +531,7 @@ window.onload = function() {
 
 		</script>
 			<div id="rendererDiv"></div>
-			<canvas style="width:800px; height:600px" id ="actionCanvas"></canvas>
+			<canvas id ="actionCanvas"></canvas>
 			<!-- div style="position:relative; top:-370px;left:-280px;">
 				<img width=150px height=150px src="icons8-left-96.png" onclick="javscript:tweenLeft()">
 			</div>
